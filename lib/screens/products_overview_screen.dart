@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../screens/cart_screen.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
+import '../widgets/app_drawer.dart';
 import '../providers/cart.dart';
 
 enum FilterOptions {
@@ -64,6 +65,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       body: ProductsGrid(_showOnlyFavorites),
+      drawer: AppDrawer(),
     );
     return scaffold;
   }
