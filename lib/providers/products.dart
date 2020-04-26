@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import './product.dart';
 
@@ -47,16 +50,32 @@ class Products with ChangeNotifier {
   }
 
   void addProduct(Product prod) {
-    final newProduct = Product(
-      id: DateTime.now().toString(),
-      title: prod.title,
-      price: prod.price,
-      description: prod.description,
-      imageUrl: prod.imageUrl,
-    );
+    const url = "https://flutter-shop-621a8.firebaseio.com/products.json";
+    http
+        .post(
+      url,
+      body: json.encode(
+        {
+          'title': prod.title,
+          'description': prod.description,
+          'imageUrl': prod.imageUrl,
+          'price': prod.price,
+          'isFavorite': prod.isFavorite,
+        },
+      ),
+    )
+        .then((response) {
+      final newProduct = Product(
+        id: json.decode(response.body)['name'],
+        title: prod.title,
+        price: prod.price,
+        description: prod.description,
+        imageUrl: prod.imageUrl,
+      );
 
-    _items.insert(0, newProduct);
-    notifyListeners();
+      _items.insert(0, newProduct);
+      notifyListeners();
+    });
   }
 
   Product findById(String id) {
@@ -69,7 +88,8 @@ class Products with ChangeNotifier {
       _items[prodIndex] = newProduct;
       notifyListeners();
     } else {
-      print("Something has gone wrong.\nThe system thinks you're editing a product which doesn't exist");
+      print(
+          "Something has gone wrong.\nThe system thinks you're editing a product which doesn't exist");
     }
   }
 

@@ -38,6 +38,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    print("I'm in did Change dependencies");
+    print("title" + _editedProduct.title);
+    print("description " + _editedProduct.description);
+    print("price ${_editedProduct.price}");
+    print("url ${_editedProduct.imageUrl}");
     if (_isInit) {
       final productId = ModalRoute.of(context).settings.arguments as String;
       if (productId != null) {
@@ -195,31 +200,38 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ),
                   Expanded(
                     child: TextFormField(
-                      initialValue: _initValues['imageUrl'],
                       decoration: InputDecoration(labelText: 'Image URL'),
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
                       controller: _imageUrlController,
                       focusNode: _imageUrlFocusNode,
-                      onFieldSubmitted: (_) => _saveForm(),
-                      onSaved: (value) {
-                        _editedProduct = Product(
-                            imageUrl: value,
-                            id: _editedProduct.id,
-                            isFavorite: _editedProduct.isFavorite,
-                            title: _editedProduct.title,
-                            price: _editedProduct.price,
-                            description: _editedProduct.description);
+                      onFieldSubmitted: (_) {
+                        _saveForm();
                       },
                       validator: (value) {
-                        if (value.isEmpty)
-                          return 'Please enter a valid image url';
+                        if (value.isEmpty) {
+                          return 'Please enter an image URL.';
+                        }
                         if (!value.startsWith('http') &&
-                            !value.startsWith('https') &&
-                            !value.startsWith('www')) {
-                          return 'Please enter a valid url';
+                            !value.startsWith('https')) {
+                          return 'Please enter a valid URL.';
+                        }
+                        if (!value.endsWith('.png') &&
+                            !value.endsWith('.jpg') &&
+                            !value.endsWith('.jpeg')) {
+                          return 'Please enter a valid image URL.';
                         }
                         return null;
+                      },
+                      onSaved: (value) {
+                        _editedProduct = Product(
+                          title: _editedProduct.title,
+                          price: _editedProduct.price,
+                          description: _editedProduct.description,
+                          imageUrl: value,
+                          id: _editedProduct.id,
+                          isFavorite: _editedProduct.isFavorite,
+                        );
                       },
                     ),
                   )
