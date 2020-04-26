@@ -46,12 +46,35 @@ class Products with ChangeNotifier {
     return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
-  void addProduct(Product value) {
-    _items.add(value);
+  void addProduct(Product prod) {
+    final newProduct = Product(
+      id: DateTime.now().toString(),
+      title: prod.title,
+      price: prod.price,
+      description: prod.description,
+      imageUrl: prod.imageUrl,
+    );
+
+    _items.insert(0, newProduct);
     notifyListeners();
   }
 
   Product findById(String id) {
     return _items.firstWhere((item) => item.id == id);
+  }
+
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    if (prodIndex >= 0) {
+      _items[prodIndex] = newProduct;
+      notifyListeners();
+    } else {
+      print("Something has gone wrong.\nThe system thinks you're editing a product which doesn't exist");
+    }
+  }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((item) => item.id == id);
+    notifyListeners();
   }
 }
