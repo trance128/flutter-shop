@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth.dart';
+import '../models/http_exception.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -104,18 +105,62 @@ class _AuthCardState extends State<AuthCard> {
     if (!_formKey.currentState.validate()) {
       return;
     }
+
+    void _showErrorDialogue(String message) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('An Error Occured'),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+                child: Text("Okay"),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                }),
+          ],
+        ),
+      );
+    }
+
     _formKey.currentState.save();
+
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      // log in user
-    } else {
-      await Provider.of<Auth>(context, listen: false).signup(
-        _authData['email'],
-        _authData['password'],
-      );
+
+    try {
+      if (_authMode == AuthMode.Login) {
+        await Provider.of<Auth>(context, listen: false).login(
+          _authData['email'],
+          _authData['password'],
+        );
+      } else {
+        await Provider.of<Auth>(context, listen: false).signup(
+          _authData['email'],
+          _authData['password'],
+        );
+      }
+    } on HttpException catch (error) {
+      var errorMessage = 'Authentication failed';
+
+      if (error.toString().contains('EMAIL_EXISTS')) {
+        errorMessage = 'This email is already in use';
+      } else if (error.toString().contains('INVALID_EMAIL')) {
+        errorMessage = 'Invalid email';
+      } else if (error.toString().contains('WEAK_PASSWORD')) {
+        errorMessage = 'This password is too weak';
+      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessage = 'Email not recognized';
+      } else if (error.toString().contains('INVALID_PASSWORD')) {
+        errorMessage = 'Email and password do not match';
+      }
+      _showErrorDialogue(errorMessage);
+    } catch (error) {
+      const errorMessage = 'Something has gone wrong\nPlease try again later';
+      _showErrorDialogue(errorMessage);
     }
+
     setState(() {
       _isLoading = false;
     });
