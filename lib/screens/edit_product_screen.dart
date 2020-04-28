@@ -108,7 +108,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
           setState(() {
             _isLoading = true;
           });
+          print("Attempting to pop page");
           Navigator.of(context).pop();
+          print("Page popped successfully");
         },
       );
     }

@@ -23,16 +23,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: Auth()),
         ChangeNotifierProxyProvider<Auth, Products>(
           create: (_) => Products(),
-          update: (ctx, auth, prevProducts) => Products()..update(auth),
+          update: (ctx, auth, products) => products..authToken = auth.token,
         ),
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
         ),
-        ChangeNotifierProvider(
-          create: (ctx) => Orders(),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (_) => Orders(),
+          update: (ctx, auth, orders) => orders..authToken = auth.token,
         ),
       ],
-      child: Consumer<Auth>(
+      child: Consumer<Auth>(  
         builder: (context, auth, _) => MaterialApp(
           title: 'Flutter Shop',
           theme: ThemeData(
