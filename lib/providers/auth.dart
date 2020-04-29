@@ -82,25 +82,21 @@ class Auth with ChangeNotifier {
   }
 
   Future<bool> tryAutoLogin() async {
-    print("Trying to autologin");
     final prefs = await SharedPreferences.getInstance();
-    print("I have an isntance");
     if (!prefs.containsKey('userData')) {
-      print("Error -- Did not find userData");
       return false;
     }
-    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
     final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
-    
+
     if (!expiryDate.isAfter(DateTime.now())) {
-      print("Error -- Expiry Data after present");
       return false;
     }
 
     _token = extractedUserData['token'];
     _userId = extractedUserData['userId'];
     _expiryDate = expiryDate;
-    print("It hsould ahve worked");
     notifyListeners();
     _autoLogout();
     return true;

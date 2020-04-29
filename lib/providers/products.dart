@@ -46,7 +46,7 @@ class Products with ChangeNotifier {
         imageUrl: prod.imageUrl,
       );
 
-      _items.insert(0, newProduct);
+      _items.add(newProduct);
       notifyListeners();
       print("Added successfully, notifying listeners");
     } catch (error) {
@@ -125,10 +125,6 @@ class Products with ChangeNotifier {
       final favoriteData = json.decode(favoriteResponse.body);
       final List<Product> loadedProducts = [];
 
-      if (extractedData == null) {
-        return;
-      }
-
       print("Extracting data");
       extractedData.forEach(
         (prodId, prodData) {
@@ -151,6 +147,7 @@ class Products with ChangeNotifier {
       print("Notifying listeners");
     } catch (error) {
       print(error);
+      throw(error);
     }
   }
 }
