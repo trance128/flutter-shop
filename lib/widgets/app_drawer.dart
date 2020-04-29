@@ -32,6 +32,11 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context)
                   .pushReplacementNamed(OrdersScreen.routeName);
+            //   Navigator.of(context).pushReplacement(
+            //     CustomRoute(
+            //       builder: (ctx) => OrdersScreen(),
+            //     ),
+            //   );
             },
           ),
           Divider(),
@@ -50,7 +55,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pop();
               Navigator.of(context).pushNamed('/');
-              
+
               Provider.of<Auth>(context, listen: false).logout();
             },
           )
