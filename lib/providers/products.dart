@@ -5,12 +5,13 @@ import 'package:http/http.dart' as http;
 import 'package:shop/models/http_exception.dart';
 
 import '../models/http_exception.dart';
+import '../providers/auth.dart';
 import './product.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [];
 
-  String authToken;
+  Auth auth;
 
   List<Product> get items {
     return [..._items];
@@ -23,7 +24,7 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product prod) async {
     print("Starting add product");
     final url =
-        "https://flutter-shop-621a8.firebaseio.com/products.json?auth=$authToken";
+        "https://flutter-shop-621a8.firebaseio.com/products.json?auth=${auth.token}";
     try {
       final response = await http.post(
         url,
@@ -37,7 +38,6 @@ class Products with ChangeNotifier {
           },
         ),
       );
-      print(json.decode(response.body)['name']);
       final newProduct = Product(
         id: json.decode(response.body)['name'],
         title: prod.title,
@@ -63,7 +63,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       final url =
-          "https://flutter-shop-621a8.firebaseio.com/products/$id.json?auth=$authToken";
+          "https://flutter-shop-621a8.firebaseio.com/products/$id.json?auth=${auth.token}";
       await http.patch(
         url,
         body: json.encode(
@@ -85,7 +85,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        "https://flutter-shop-621a8.firebaseio.com/products/$id.json?auth=$authToken";
+        "https://flutter-shop-621a8.firebaseio.com/products/$id.json?auth=${auth.token}";
     final existingProductIndex = _items.indexWhere((item) => item.id == id);
     var existingProduct = _items[existingProductIndex];
 
@@ -107,18 +107,27 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
+    print("Starting fetch");
     final url =
-        "https://flutter-shop-621a8.firebaseio.com/products.json?auth=$authToken";
+        "https://flutter-shop-621a8.firebaseio.com/products.json?auth=${auth.token}";
 
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractedData == null) {
+        return;
+      }
+      print("Starting fetfch favs");
+      final favoriteResponse = await http.get(
+          "https://flutter-shop-621a8.firebaseio.com/userFavorites/${auth.userId}.json?auth=${auth.token}");
+      final favoriteData = json.decode(favoriteResponse.body);
       final List<Product> loadedProducts = [];
 
       if (extractedData == null) {
         return;
       }
 
+      print("Extracting data");
       extractedData.forEach(
         (prodId, prodData) {
           loadedProducts.add(
@@ -128,13 +137,15 @@ class Products with ChangeNotifier {
               description: prodData['description'],
               price: prodData['price'],
               imageUrl: prodData['imageUrl'],
-              isFavorite: prodData['isFavorite'],
+              isFavorite: favoriteData == null ? false : favoriteData[prodId] ?? false,
             ),
           );
         },
       );
+      print("Finished extracting");
       _items = loadedProducts;
       notifyListeners();
+      print("Notifying listeners");
     } catch (error) {
       print(error);
     }

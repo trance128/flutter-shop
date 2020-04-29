@@ -23,7 +23,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: Auth()),
         ChangeNotifierProxyProvider<Auth, Products>(
           create: (_) => Products(),
-          update: (ctx, auth, products) => products..authToken = auth.token,
+          update: (ctx, auth, products) {
+            return products..auth = auth;
+          },
         ),
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
           update: (ctx, auth, orders) => orders..authToken = auth.token,
         ),
       ],
-      child: Consumer<Auth>(  
+      child: Consumer<Auth>(
         builder: (context, auth, _) => MaterialApp(
           title: 'Flutter Shop',
           theme: ThemeData(
