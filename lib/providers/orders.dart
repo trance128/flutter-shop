@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import './cart.dart';
+import './auth.dart';
 
 class OrderItem {
   final String id;
@@ -21,20 +22,14 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
-  String authToken;
-
-  void update(String token){
-    print("Running order update");
-    if (this.authToken == token) return;
-    this.authToken = token;
-  }
+  Auth auth;
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    final url = "https://flutter-shop-621a8.firebaseio.com/orders.json?auth=$authToken";
+    final url = "https://flutter-shop-621a8.firebaseio.com/orders/${auth.userId}.json?auth=${auth.token}";
     final timeStamp = DateTime.now().toIso8601String();
     final response = await http.post(
       url,
@@ -65,7 +60,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrder() async {
-    final url = "https://flutter-shop-621a8.firebaseio.com/orders.json?auth=$authToken";
+    final url = "https://flutter-shop-621a8.firebaseio.com/orders/${auth.userId}.json?auth=${auth.token}";
     final response = await http.get(url);
     final List<OrderItem> loadedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>;

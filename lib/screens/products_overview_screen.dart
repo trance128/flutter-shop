@@ -41,6 +41,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("Building new products overview screen");
     var scaffold = Scaffold(
       appBar: AppBar(
         title: const Text("Ovid's Shop"),

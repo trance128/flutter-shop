@@ -34,7 +34,7 @@ class Products with ChangeNotifier {
             'description': prod.description,
             'imageUrl': prod.imageUrl,
             'price': prod.price,
-            'isFavorite': prod.isFavorite,
+            'creatorId': auth.userId,
           },
         ),
       );
@@ -106,10 +106,12 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts({bool filterByUser = false}) async {
+    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="${auth.userId}"' : '';
     print("Starting fetch");
+    print("Filter by user is set to $filterByUser");
     final url =
-        "https://flutter-shop-621a8.firebaseio.com/products.json?auth=${auth.token}";
+        'https://flutter-shop-621a8.firebaseio.com/products.json?auth=${auth.token}&$filterString';
 
     try {
       final response = await http.get(url);
@@ -137,7 +139,8 @@ class Products with ChangeNotifier {
               description: prodData['description'],
               price: prodData['price'],
               imageUrl: prodData['imageUrl'],
-              isFavorite: favoriteData == null ? false : favoriteData[prodId] ?? false,
+              isFavorite:
+                  favoriteData == null ? false : favoriteData[prodId] ?? false,
             ),
           );
         },
