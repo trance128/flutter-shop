@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 
-class CustomRoute<T> extends MaterialPageRoute<T> {
-  CustomRoute({WidgetBuilder builder, RouteSettings settings})
-      : super(
-          builder: builder,
-          settings: settings,
-        );
-}
+// class CustomRoute<T> extends MaterialPageRoute<T> {
+//   CustomRoute({WidgetBuilder builder, RouteSettings settings})
+//       : super(
+//           builder: builder,
+//           settings: settings,
+//         );
+// }
 
-class CustomPageTransitionBuilder extends PageTransitionsBuilder {
-  @override
-  Widget buildTransitions<T>(
-    PageRoute<T> route,
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    if (route.settings.isInitialRoute) {
-      return child;
-    }
+// class CustomPageTransitionBuilder extends PageTransitionsBuilder {
+//   @override
+//   Widget buildTransitions<T>(
+//     PageRoute<T> route,
+//     BuildContext context,
+//     Animation<double> animation,
+//     Animation<double> secondaryAnimation,
+//     Widget child,
+//   ) {
+//     if (route.settings.initialRoute) {
+//       return child;
+//     }
 
-    return FadeTransition(
-      opacity: animation,
-      child: child,
-    );
-  }
-}
+//     return FadeTransition(
+//       opacity: animation,
+//       child: child,
+//     );
+//   }
+// }

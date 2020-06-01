@@ -44,10 +44,12 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.purple,
             accentColor: Colors.deepOrange,
             fontFamily: 'Lato',
-            pageTransitionsTheme: PageTransitionsTheme(builders: {
-              TargetPlatform.android: CustomPageTransitionBuilder(),
-              TargetPlatform.iOS: CustomPageTransitionBuilder(),
-            },),
+            // one of the methods needed for my custom page route to work has been deprecated.  
+            // I'm removing the custom route, as it wasn't an important feature anyway
+            // pageTransitionsTheme: PageTransitionsTheme(builders: {
+            //   TargetPlatform.android: CustomPageTransitionBuilder(),
+            //   TargetPlatform.iOS: CustomPageTransitionBuilder(),
+            // },),
           ),
           home: auth.isAuth == true
               ? ProductsOverviewScreen()
